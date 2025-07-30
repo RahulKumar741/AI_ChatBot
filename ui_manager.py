@@ -3,6 +3,17 @@ import streamlit as st
 def apply_chat_ui():
     st.markdown("""
         <style>
+        .chat-header {
+            background: #004080;
+            color: white;
+            padding: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
         .chat-header img {
             width: 36px;
             height: 36px;
