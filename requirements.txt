@@ -2,4 +2,4 @@ streamlit
 pandas
 rapidfuzz
 python-docx
-pypdf
+PyPDF2
