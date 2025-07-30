@@ -45,7 +45,7 @@ if submit_button and user_input:
         if kb_answer:
             bot_reply = f"📚 {kb_answer}"
         else:
-            bot_reply = "🤔 Sorry, I don’t know that yet. (AI fallback disabled)"
+            bot_reply = "🤔 Sorry, I don’t know that yet. (AI is disabled)"
     
     st.session_state["messages"].append({"role": "bot", "content": bot_reply})
 
