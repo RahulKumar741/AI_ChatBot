@@ -63,40 +63,10 @@ def apply_chat_ui():
         </style>
     """, unsafe_allow_html=True)
 
-
-def render_chat_ui(messages, chat_name="Rahul's Smart Assistant",
-                   icon_url="https://cdn-icons-png.flaticon.com/512/4712/4712109.png"):
-    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-
-    # Header
+def render_header(chat_name="Rahul's Smart Assistant", icon_url="https://cdn-icons-png.flaticon.com/512/4712/4712109.png"):
     st.markdown(f"""
         <div class="chat-header">
             <img src="{icon_url}" alt="Bot Icon">
             <span>{chat_name}</span>
         </div>
     """, unsafe_allow_html=True)
-
-    # Messages section
-    st.markdown('<div class="chat-messages">', unsafe_allow_html=True)
-    for msg in messages:
-        if msg["role"] == "user":
-            st.markdown(f'<div class="user-msg">🧑 {msg["content"]}</div>', unsafe_allow_html=True)
-        else:
-            st.markdown(f'<div class="bot-msg">🤖 {msg["content"]}</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    # Footer (input form)
-    st.markdown('<div class="chat-footer">', unsafe_allow_html=True)
-    col1, col2 = st.columns([8, 2])
-    with col1:
-        user_input = st.text_input("💬 Type your message:", key="chat_input", label_visibility="collapsed")
-    with col2:
-        send = st.button("Send", key="send_btn")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('</div>', unsafe_allow_html=True)  # Close chat-container
-
-    # Return if Enter pressed (non-empty input) or button clicked
-    if (user_input and st.session_state.get("chat_input")) or send:
-        return user_input.strip()
-    return None
