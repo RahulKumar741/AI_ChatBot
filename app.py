@@ -15,10 +15,7 @@ if "messages" not in st.session_state:
         {"role": "bot", "content": "Hi 👋, welcome to Rahul's Smart Assistant! How can I help you today?"}
     ]
 
-# Unified container for chat
-st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-
-# Header
+# Header only (no outer container)
 ui_manager.render_header()
 
 # Messages
@@ -30,7 +27,7 @@ for msg in st.session_state["messages"]:
         st.markdown(f'<div class="bot-msg">🤖 {msg["content"]}</div>', unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
 
-# Footer (input)
+# Footer input
 st.markdown('<div class="chat-footer">', unsafe_allow_html=True)
 col1, col2 = st.columns([8, 2])
 with col1:
@@ -38,8 +35,6 @@ with col1:
 with col2:
     send = st.button("Send", key="send_btn")
 st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown('</div>', unsafe_allow_html=True)  # close chat-container
 
 # Handle input
 if send and user_input.strip():
