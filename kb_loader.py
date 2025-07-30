@@ -8,7 +8,7 @@ def load_kb():
     kb_data = []
 
     # 1. Load CSV
-    csv_path = "knowledge/data.csv"
+    csv_path = "Knowledge/data.csv"
     if os.path.exists(csv_path):
         df = pd.read_csv(csv_path)
         for _, row in df.iterrows():
