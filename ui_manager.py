@@ -3,28 +3,6 @@ import streamlit as st
 def apply_chat_ui():
     st.markdown("""
         <style>
-        .chat-container {
-            width: 600px;
-            height: 700px;
-            margin: auto;
-            display: flex;
-            flex-direction: column;
-            border-radius: 12px;
-            border: 2px solid #004080;
-            background: #ffffff;
-            box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
-        }
-        .chat-header {
-            background: #004080;
-            color: white;
-            padding: 12px;
-            font-size: 18px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            border-top-left-radius: 12px;
-            border-top-right-radius: 12px;
-        }
         .chat-header img {
             width: 36px;
             height: 36px;
@@ -32,10 +10,11 @@ def apply_chat_ui():
             margin-right: 10px;
         }
         .chat-messages {
-            flex: 1;
             padding: 10px;
             overflow-y: auto;
             background: #f4f6f9;
+            border-radius: 8px;
+            margin-bottom: 10px;
         }
         .user-msg {
             background: #DCF8C6;
@@ -57,8 +36,8 @@ def apply_chat_ui():
         }
         .chat-footer {
             padding: 10px;
-            border-top: 1px solid #ddd;
             background: #fafafa;
+            border-radius: 8px;
         }
         </style>
     """, unsafe_allow_html=True)
