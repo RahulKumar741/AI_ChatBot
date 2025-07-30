@@ -8,12 +8,12 @@ def load_kb():
     kb_data = []
     knowledge_path = "knowledge"
 
-    if not os.path.exists(Knowledge_path):
+    if not os.path.exists(knowledge_path):
         print("⚠️ knowledge/ folder not found.")
         return pd.DataFrame(columns=["Category", "Question", "Answer"])
 
     # Load CSV if available
-    csv_path = os.path.join(Knowledge_path, "data.csv")
+    csv_path = os.path.join(knowledge_path, "data.csv")
     if os.path.exists(csv_path):
         df = pd.read_csv(csv_path)
         for _, row in df.iterrows():
@@ -26,8 +26,8 @@ def load_kb():
         print("⚠️ data.csv not found inside knowledge/")
 
     # Load TXT, DOCX, PDF if folder exists
-    for file in os.listdir(Knowledge_path):
-        filepath = os.path.join(Knowledge_path, file)
+    for file in os.listdir(knowledge_path):
+        filepath = os.path.join(knowledge_path, file)
 
         if file.endswith(".txt"):
             with open(filepath, "r", encoding="utf-8") as f:
