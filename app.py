@@ -4,21 +4,25 @@ import ui_manager
 
 st.set_page_config(page_title="AI ChatBot", page_icon="🤖", layout="centered")
 
+# Apply custom CSS
 ui_manager.apply_chat_ui()
 
+# Load knowledge base
 kb = kb_loader.load_kb()
 if kb.empty:
     st.warning("⚠️ Knowledge base empty. Please add files to the Knowledge/ folder.")
 
+# Initialize chat history
 if "messages" not in st.session_state:
     st.session_state["messages"] = [
         {"role": "bot", "content": "Hi 👋, welcome to Rahul's Smart Assistant! How can I help you today?"}
     ]
 
-# Header only (no outer container)
-ui_manager.render_header()
+# Header
+ui_manager.render_header(chat_name="Rahul's Smart Assistant", 
+                         icon_url="https://cdn-icons-png.flaticon.com/512/4712/4712109.png")
 
-# Messages
+# Chat messages
 st.markdown('<div class="chat-messages">', unsafe_allow_html=True)
 for msg in st.session_state["messages"]:
     if msg["role"] == "user":
@@ -27,7 +31,7 @@ for msg in st.session_state["messages"]:
         st.markdown(f'<div class="bot-msg">🤖 {msg["content"]}</div>', unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
 
-# Footer input
+# Chat footer input
 st.markdown('<div class="chat-footer">', unsafe_allow_html=True)
 col1, col2 = st.columns([8, 2])
 with col1:
@@ -36,13 +40,17 @@ with col2:
     send = st.button("Send", key="send_btn")
 st.markdown('</div>', unsafe_allow_html=True)
 
-# Handle input
+# Handle user input
 if send and user_input.strip():
     st.session_state["messages"].append({"role": "user", "content": user_input})
+
     kb_answer = kb_loader.find_kb_answer(user_input, kb)
     if kb_answer:
         bot_reply = f"📚 {kb_answer}"
     else:
         bot_reply = "🤔 Sorry, I don’t know that yet."
+    
     st.session_state["messages"].append({"role": "bot", "content": bot_reply})
-    st.experimental_rerun()
+    
+    # Clear the input box for next message
+    st.session_state["chat_input"] = ""
