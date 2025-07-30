@@ -4,7 +4,7 @@ def apply_chat_ui():
     st.markdown("""
         <style>
         .chat-container {
-            width: 600px;  /* wider container for comfortable conversation */
+            width: 600px;
             height: 700px;
             margin: auto;
             display: flex;
@@ -20,7 +20,6 @@ def apply_chat_ui():
             padding: 12px;
             font-size: 18px;
             font-weight: bold;
-            text-align: left;
             display: flex;
             align-items: center;
             border-top-left-radius: 12px;
@@ -64,7 +63,8 @@ def apply_chat_ui():
         </style>
     """, unsafe_allow_html=True)
 
-def render_chat_ui(messages, chat_name="Rahul's Smart Assistant", icon_url="https://cdn-icons-png.flaticon.com/512/4712/4712109.png"):
+def render_chat_ui(messages, chat_name="Rahul's Smart Assistant",
+                   icon_url="https://cdn-icons-png.flaticon.com/512/4712/4712109.png"):
     st.markdown('<div class="chat-container">', unsafe_allow_html=True)
 
     # Header
@@ -75,7 +75,7 @@ def render_chat_ui(messages, chat_name="Rahul's Smart Assistant", icon_url="http
         </div>
     """, unsafe_allow_html=True)
 
-    # Messages
+    # Messages section
     st.markdown('<div class="chat-messages">', unsafe_allow_html=True)
     for msg in messages:
         if msg["role"] == "user":
@@ -84,4 +84,12 @@ def render_chat_ui(messages, chat_name="Rahul's Smart Assistant", icon_url="http
             st.markdown(f'<div class="bot-msg">🤖 {msg["content"]}</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
+    # Footer (input form)
+    st.markdown('<div class="chat-footer">', unsafe_allow_html=True)
+    user_input = st.text_input("💬 Type your message:", key="chat_input")
+    send = st.button("Send", key="send_btn")
     st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)  # Close chat-container
+
+    return user_input if send else None
