@@ -6,9 +6,14 @@ from PyPDF2 import PdfReader
 
 def load_kb():
     kb_data = []
+    knowledge_path = "knowledge"
 
-    # 1. Load CSV
-    csv_path = "Knowledge/data.csv"
+    if not os.path.exists(Knowledge_path):
+        print("⚠️ knowledge/ folder not found.")
+        return pd.DataFrame(columns=["Category", "Question", "Answer"])
+
+    # Load CSV if available
+    csv_path = os.path.join(Knowledge_path, "data.csv")
     if os.path.exists(csv_path):
         df = pd.read_csv(csv_path)
         for _, row in df.iterrows():
@@ -17,54 +22,25 @@ def load_kb():
                 "Question": str(row.get("Question", "")).strip(),
                 "Answer": str(row.get("Answer", "")).strip()
             })
+    else:
+        print("⚠️ data.csv not found inside knowledge/")
 
-    # 2. Load TXT files
-    for file in os.listdir("knowledge"):
+    # Load TXT, DOCX, PDF if folder exists
+    for file in os.listdir(Knowledge_path):
+        filepath = os.path.join(Knowledge_path, file)
+
         if file.endswith(".txt"):
-            with open(os.path.join("knowledge", file), "r", encoding="utf-8") as f:
-                content = f.read()
-                kb_data.append({
-                    "Category": "TextDoc",
-                    "Question": file,
-                    "Answer": content.strip()
-                })
+            with open(filepath, "r", encoding="utf-8") as f:
+                kb_data.append({"Category": "TextDoc", "Question": file, "Answer": f.read().strip()})
 
-    # 3. Load DOCX files
-    for file in os.listdir("knowledge"):
-        if file.endswith(".docx"):
-            doc = Document(os.path.join("knowledge", file))
+        elif file.endswith(".docx"):
+            doc = Document(filepath)
             content = "\n".join([p.text for p in doc.paragraphs if p.text.strip()])
-            kb_data.append({
-                "Category": "WordDoc",
-                "Question": file,
-                "Answer": content.strip()
-            })
+            kb_data.append({"Category": "WordDoc", "Question": file, "Answer": content})
 
-    # 4. Load PDF files
-    for file in os.listdir("knowledge"):
-        if file.endswith(".pdf"):
-            reader = PdfReader(os.path.join("knowledge", file))
+        elif file.endswith(".pdf"):
+            reader = PdfReader(filepath)
             content = "\n".join([page.extract_text() for page in reader.pages if page.extract_text()])
-            kb_data.append({
-                "Category": "PDF",
-                "Question": file,
-                "Answer": content.strip()
-            })
+            kb_data.append({"Category": "PDF", "Question": file, "Answer": content})
 
     return pd.DataFrame(kb_data)
-
-def find_kb_answer(user_q, kb, threshold=60):
-    user_q_lower = user_q.strip().lower()
-    best_match = None
-    best_score = 0
-
-    for _, row in kb.iterrows():
-        question_text = str(row["Question"]).strip().lower()
-        score = fuzz.partial_ratio(user_q_lower, question_text)
-        if score > best_score:
-            best_score = score
-            best_match = row
-
-    if best_match is not None and best_score >= threshold:
-        return f"[{best_match['Category']}] {best_match['Answer']}"
-    return None
