@@ -16,6 +16,15 @@ if "messages" not in st.session_state:
         {"role": "bot", "content": "Hi 👋, welcome to Rahul's Smart Assistant! How can I help you today?"}
     ]
 
+# Greetings dictionary
+greetings = {
+    "hi": "🤖 Hello! How can I assist you today?",
+    "hello": "🤖 Hi there! Good to see you 😊",
+    "hey": "🤖 Hey! What would you like to know?",
+    "good morning": "🤖 Good morning! Hope you have a great day 🌞",
+    "good evening": "🤖 Good evening! How can I help you tonight?",
+}
+
 # Header
 ui_manager.render_header(chat_name="Rahul's Smart Assistant", 
                          icon_url="https://cdn-icons-png.flaticon.com/512/4712/4712109.png")
@@ -26,7 +35,7 @@ for msg in st.session_state["messages"]:
     if msg["role"] == "user":
         st.markdown(f'<div class="user-msg">🧑 {msg["content"]}</div>', unsafe_allow_html=True)
     else:
-        st.markdown(f'<div class="bot-msg">🤖 {msg["content"]}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="bot-msg">{msg["content"]}</div>', unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
 
 # Footer input
@@ -38,14 +47,18 @@ with col2:
     send = st.button("Send", key="send_btn")
 st.markdown('</div>', unsafe_allow_html=True)
 
-# Process input (without clearing)
+# Process input (with greetings)
 if send and user_input.strip():
     st.session_state["messages"].append({"role": "user", "content": user_input})
 
-    kb_answer = kb_loader.find_kb_answer(user_input, kb)
-    if kb_answer:
-        bot_reply = f"📚 {kb_answer}"
+    normalized_input = user_input.lower().strip()
+    if normalized_input in greetings:
+        bot_reply = greetings[normalized_input]
     else:
-        bot_reply = "🤔 Sorry, I don’t know that yet."
+        kb_answer = kb_loader.find_kb_answer(user_input, kb)
+        if kb_answer:
+            bot_reply = f"📚 {kb_answer}"
+        else:
+            bot_reply = "🤔 Sorry, I don’t know that yet."
 
     st.session_state["messages"].append({"role": "bot", "content": bot_reply})
