@@ -3,17 +3,20 @@ import kb_loader
 
 st.set_page_config(page_title="AI ChatBot", page_icon="🤖", layout="wide")
 
-st.title("🤖 Knowledge-Only AI ChatBot")
-st.write("✅ Answers are pulled only from the knowledge folder.")
+st.title("🤖 Knowledge-Based AI ChatBot")
+st.write("✅ Answers come from the Knowledge folder. (AI fallback disabled)")
 
-# Load KB
+# Load knowledge base
 kb = kb_loader.load_kb()
+
+if kb.empty:
+    st.warning("⚠️ No knowledge base loaded. Please add a CSV/TXT/DOCX/PDF file in the Knowledge/ folder.")
 
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
-# Chat Input
+# Chat input form
 with st.form(key="chat_form", clear_on_submit=True):
     user_input = st.text_input("💬 Ask your question:")
     submit_button = st.form_submit_button("Send")
@@ -25,7 +28,7 @@ if submit_button and user_input:
     if kb_answer:
         bot_reply = f"📚 {kb_answer}"
     else:
-        bot_reply = "🤔 Sorry, I don’t know that yet. (AI fallback disabled for now)"
+        bot_reply = "🤔 Sorry, I don’t know that yet. (AI fallback disabled)"
     
     st.session_state["messages"].append({"role": "bot", "content": bot_reply})
 
