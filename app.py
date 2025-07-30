@@ -6,11 +6,16 @@ st.set_page_config(page_title="AI ChatBot", page_icon="🤖", layout="centered")
 
 ui_manager.apply_chat_ui()
 
-kb = kb_loader.load_kb()
+# Cache KB for performance
+@st.cache_data
+def load_kb():
+    return kb_loader.load_kb()
+
+kb = load_kb()
 if kb.empty:
     st.warning("⚠️ Knowledge base empty. Please add files to the Knowledge/ folder.")
 
-# Keep chat history alive
+# Maintain chat history
 if "messages" not in st.session_state:
     st.session_state["messages"] = [
         {"role": "bot", "content": "Hi 👋, welcome to Rahul's Smart Assistant! How can I help you today?"}
@@ -29,7 +34,7 @@ greetings = {
 ui_manager.render_header(chat_name="Rahul's Smart Assistant",
                          icon_url="https://cdn-icons-png.flaticon.com/512/4712/4712109.png")
 
-# Messages
+# Chat messages
 st.markdown('<div class="chat-messages">', unsafe_allow_html=True)
 for msg in st.session_state["messages"]:
     if msg["role"] == "user":
@@ -38,7 +43,7 @@ for msg in st.session_state["messages"]:
         st.markdown(f'<div class="bot-msg">{msg["content"]}</div>', unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
 
-# Footer input (Enter + Send support)
+# Footer input (Enter + Send)
 st.markdown('<div class="chat-footer">', unsafe_allow_html=True)
 col1, col2 = st.columns([8, 2])
 with col1:
@@ -47,7 +52,7 @@ with col2:
     send = st.button("Send")
 st.markdown('</div>', unsafe_allow_html=True)
 
-# Process input (both Enter + Send trigger)
+# Handle input
 if (send or user_input) and user_input.strip():
     st.session_state["messages"].append({"role": "user", "content": user_input})
 
@@ -62,4 +67,9 @@ if (send or user_input) and user_input.strip():
             bot_reply = "🤔 Sorry, I don’t know that yet."
 
     st.session_state["messages"].append({"role": "bot", "content": bot_reply})
-    st.session_state["chat_input"] = ""  # clears after sending
+
+# Add Clear Chat button
+if st.button("🗑️ Clear Chat"):
+    st.session_state["messages"] = [
+        {"role": "bot", "content": "Chat cleared. Hi 👋, how can I help you now?"}
+    ]
