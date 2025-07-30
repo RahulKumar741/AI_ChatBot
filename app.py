@@ -4,21 +4,18 @@ import ui_manager
 
 st.set_page_config(page_title="AI ChatBot", page_icon="🤖", layout="centered")
 
-# Apply custom CSS
 ui_manager.apply_chat_ui()
 
-# Load knowledge base
 kb = kb_loader.load_kb()
 if kb.empty:
-    st.warning("⚠️ No knowledge base loaded. Please add files to the Knowledge/ folder.")
+    st.warning("⚠️ Knowledge base empty. Please add files to the Knowledge/ folder.")
 
-# Initialize chat history
 if "messages" not in st.session_state:
     st.session_state["messages"] = [
         {"role": "bot", "content": "Hi 👋, welcome to Rahul's Smart Assistant! How can I help you today?"}
     ]
 
-# Render chat (header + messages + footer input all inside one container)
+# Render chat UI (header + messages + footer input)
 user_input = ui_manager.render_chat_ui(st.session_state["messages"])
 
 if user_input:
