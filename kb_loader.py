@@ -3,7 +3,7 @@ from rapidfuzz import fuzz
 
 def load_kb():
     try:
-        df = pd.read_csv("knowledge/data.csv")
+        df = pd.read_csv("Knowledge/data.csv")
         required_cols = {"Category", "Question", "Answer"}
         if not required_cols.issubset(df.columns):
             print("CSV must have: Category, Question, Answer")
