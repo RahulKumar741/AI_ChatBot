@@ -6,7 +6,7 @@ from PyPDF2 import PdfReader
 
 def load_kb():
     kb_data = []
-    knowledge_path = "knowledge"
+    knowledge_path = "Knowledge"
 
     if not os.path.exists(knowledge_path):
         print("⚠️ knowledge/ folder not found.")
