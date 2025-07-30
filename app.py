@@ -26,7 +26,7 @@ greetings = {
 }
 
 # Header
-ui_manager.render_header(chat_name="Rahul's Smart Assistant", 
+ui_manager.render_header(chat_name="Rahul's Smart Assistant",
                          icon_url="https://cdn-icons-png.flaticon.com/512/4712/4712109.png")
 
 # Messages
@@ -38,17 +38,17 @@ for msg in st.session_state["messages"]:
         st.markdown(f'<div class="bot-msg">{msg["content"]}</div>', unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
 
-# Footer input
+# Footer input (Enter + Send support)
 st.markdown('<div class="chat-footer">', unsafe_allow_html=True)
 col1, col2 = st.columns([8, 2])
 with col1:
     user_input = st.text_input("💬 Type your message:", key="chat_input", label_visibility="collapsed")
 with col2:
-    send = st.button("Send", key="send_btn")
+    send = st.button("Send")
 st.markdown('</div>', unsafe_allow_html=True)
 
-# Process input (with greetings)
-if send and user_input.strip():
+# Process input (both Enter + Send trigger)
+if (send or user_input) and user_input.strip():
     st.session_state["messages"].append({"role": "user", "content": user_input})
 
     normalized_input = user_input.lower().strip()
@@ -62,3 +62,4 @@ if send and user_input.strip():
             bot_reply = "🤔 Sorry, I don’t know that yet."
 
     st.session_state["messages"].append({"role": "bot", "content": bot_reply})
+    st.session_state["chat_input"] = ""  # clears after sending
