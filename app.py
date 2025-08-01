@@ -1,75 +1,44 @@
-import streamlit as st
-import kb_loader
-import ui_manager
+import os
+import pandas as pd
+from rapidfuzz import fuzz
 
-st.set_page_config(page_title="AI ChatBot", page_icon="🤖", layout="centered")
-
-ui_manager.apply_chat_ui()
-
-# Cache KB for performance
-@st.cache_data
 def load_kb():
-    return kb_loader.load_kb()
+    kb_data = []
+    knowledge_path = "Knowledge"
 
-kb = load_kb()
-if kb.empty:
-    st.warning("⚠️ Knowledge base empty. Please add files to the Knowledge/ folder.")
+    if not os.path.exists(knowledge_path):
+        return pd.DataFrame(columns=["Category", "Question", "Answer"])
 
-# Maintain chat history
-if "messages" not in st.session_state:
-    st.session_state["messages"] = [
-        {"role": "bot", "content": "Hi 👋, welcome to Rahul's Smart Assistant! How can I help you today?"}
-    ]
+    csv_path = os.path.join(knowledge_path, "data.csv")
+    if os.path.exists(csv_path):
+        df = pd.read_csv(csv_path)
+        for _, row in df.iterrows():
+            kb_data.append({
+                "Category": row.get("Category", "General"),
+                "Question": str(row.get("Question", "")).strip(),
+                "Answer": str(row.get("Answer", "")).strip()
+            })
 
-# Greetings dictionary
-greetings = {
-    "hi": "🤖 Hello! How can I assist you today?",
-    "hello": "🤖 Hi there! Good to see you 😊",
-    "hey": "🤖 Hey! What would you like to know?",
-    "good morning": "🤖 Good morning! Hope you have a great day 🌞",
-    "good evening": "🤖 Good evening! How can I help you tonight?",
-}
+    return pd.DataFrame(kb_data, columns=["Category", "Question", "Answer"])
 
-# Header
-ui_manager.render_header(chat_name="Rahul's Smart Assistant",
-                         icon_url="https://cdn-icons-png.flaticon.com/512/4712/4712109.png")
+def find_kb_answer(user_q, kb, threshold=80):
+    if kb.empty:
+        return None
 
-# Chat messages
-st.markdown('<div class="chat-messages">', unsafe_allow_html=True)
-for msg in st.session_state["messages"]:
-    if msg["role"] == "user":
-        st.markdown(f'<div class="user-msg">🧑 {msg["content"]}</div>', unsafe_allow_html=True)
-    else:
-        st.markdown(f'<div class="bot-msg">{msg["content"]}</div>', unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
+    user_q_lower = user_q.strip().lower()
+    if len(user_q_lower) < 3:  # Skip very short inputs like "hi"
+        return None
 
-# Footer input (Enter + Send)
-st.markdown('<div class="chat-footer">', unsafe_allow_html=True)
-col1, col2 = st.columns([8, 2])
-with col1:
-    user_input = st.text_input("💬 Type your message:", key="chat_input", label_visibility="collapsed")
-with col2:
-    send = st.button("Send")
-st.markdown('</div>', unsafe_allow_html=True)
+    best_match, best_score = None, 0
+    for _, row in kb.iterrows():
+        question_text = str(row["Question"]).strip().lower()
+        score = fuzz.partial_ratio(user_q_lower, question_text)
 
-# Handle input
-if (send or user_input) and user_input.strip():
-    st.session_state["messages"].append({"role": "user", "content": user_input})
+        if score > best_score:
+            best_score, best_match = score, row
+        if score == 100:
+            break  # Perfect match found
 
-    normalized_input = user_input.lower().strip()
-    if normalized_input in greetings:
-        bot_reply = greetings[normalized_input]
-    else:
-        kb_answer = kb_loader.find_kb_answer(user_input, kb)
-        if kb_answer:
-            bot_reply = f"📚 {kb_answer}"
-        else:
-            bot_reply = "🤔 Sorry, I don’t know that yet."
-
-    st.session_state["messages"].append({"role": "bot", "content": bot_reply})
-
-# Add Clear Chat button
-if st.button("🗑️ Clear Chat"):
-    st.session_state["messages"] = [
-        {"role": "bot", "content": "Chat cleared. Hi 👋, how can I help you now?"}
-    ]
+    if best_match is not None and best_score >= threshold:
+        return f"[{best_match['Category']}] {best_match['Answer']}"
+    return None
